@@ -1,0 +1,91 @@
+openapi: 3.0.3
+info:
+  title: Fraud Detection Application
+  description: |-
+    This is an example of a full architecture for a fraud detection application.
+  contact:
+    email: peleg@uni.minerva.edu
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+tags:
+  - name: Predict
+    description: Get fraud risk scores
+paths:
+  /transaction:
+    post:
+      tags:
+        - Predict
+      summary: Get risk score for event
+      description: Send an event and get a risk score for it
+      operationId: transactionRisk
+      requestBody:
+        description: A transaction event
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+        required: true
+      responses:
+        '200':
+          description: Successful prediction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prediction'
+        '405':
+          description: Invalid input
+components:
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        customerId:
+          type: integer
+          format: int64
+          example: 198772
+        userId:
+          type: integer
+          format: int64
+          example: 198772
+        ipAddr:
+          type: string
+        acctCreated:
+          type: string
+          format: date-time
+        cart:
+          type: array
+          description: Collection of items bought
+          items:
+            $ref: '#/components/schemas/Item'
+    Item:
+      type: object
+      properties:
+        item_id:
+          type: integer
+          format: int64
+          example: 100000
+        amount:
+          type: integer
+          format: int32
+        cost:
+          type: integer
+          description: Cost in USD cents
+          format: int32
+    Prediction:
+      type: object
+      properties:
+        requestId:
+          type: string
+        transaction:
+          type: object
+          description: Collection of items bought
+          items:
+            $ref: '#/components/schemas/Transaction'
+        riskScore:
+          type: number
+          example: 65.32
